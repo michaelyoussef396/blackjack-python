@@ -5,7 +5,7 @@ class Card:
         self.suit = suit
         self.rank = rank
     def __str__(self):
-        return f"{self.rank['rank']}, of , {self.suit}"
+        return f"{self.rank['rank']} of  {self.suit}"
 
 class Deck:
     def __init__(self):
@@ -44,5 +44,43 @@ class Deck:
                 cards_dealt.append(card)
         return cards_dealt
 
-card1 = Card("hearts", {"rank": "9", "value": 9})
-print(card1)
+class Hand:
+    def __init__(self, dealer=False):
+        self.cards = []
+        self.value = 0
+        self.dealer = dealer
+
+    def add_card(self, card_list):
+        self.cards.extend(card_list)
+
+    def calculate_value(self):
+        has_ace = False
+        self.value = 0
+        for card in self.cards:
+            card_value = card.rank["value"]
+            self.value += card_value
+            if card.rank["rank"] == "A" and self.value + 10 <= 21:
+                has_ace = True
+        if has_ace and self.value + 10 <= 21:
+            self.value += 10
+
+    def get_value(self):
+        self.calculate_value()
+        return self.value
+
+    def is_blackjack(self): 
+        return self.get_value() == 21 and len(self.cards) == 2
+
+    def display(self, show_all_dealer_cards=False):
+        print(f'''{"Dealer's" if self.dealer else "Your"} hand:''')
+        for index, card in enumerate(self.cards):
+            if index == 0 and self.dealer and not show_all_dealer_cards  and not self.is_blackjack():
+                print("hidden")
+            else:
+                print(card)
+
+            
+        if not self.dealer:
+            print("Value:", self.get_value())
+        print()
+
